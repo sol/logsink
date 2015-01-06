@@ -19,12 +19,12 @@ data Config = Config {
 , configSinks :: [Sink]
 }
 
-type Format = LogRecord -> String
+type Format = LogRecord -> IO String
 
 type Sink = LogLevel -> String -> IO ()
 
 defaultFormat :: Format
-defaultFormat record = (shows level . location . showString ": " . showString message) ""
+defaultFormat record = return $ (shows level . location . showString ": " . showString message) ""
   where
     level = logRecordLevel record
     mLocation = logRecordLocation record
@@ -50,7 +50,8 @@ stdErrSink :: Sink
 stdErrSink _level = hPutStrLn stderr
 
 mkLogSink :: Config -> LogSink
-mkLogSink (Config format sinks) logRecord = forM_ sinks $ \sink -> sink level output
+mkLogSink (Config format sinks) logRecord = do
+  output <- format logRecord
+  forM_ sinks $ \sink -> sink level output
   where
-    output = format logRecord
     level = logRecordLevel logRecord

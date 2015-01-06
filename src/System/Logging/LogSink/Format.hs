@@ -1,32 +1,36 @@
 {-# LANGUAGE RecordWildCards #-}
 module System.Logging.LogSink.Format where
 
+import           Control.Applicative
+import           Control.Concurrent
 import           System.Logging.Facade.Types
 import           System.Logging.LogSink.Core
 
 formatLogRecord :: String -> Format
 formatLogRecord format = formatNodes (parseFormat format)
 
-data Node = Level | Message | Literal String
+data Node = Level | Message | ThreadId | Literal String
   deriving (Eq, Show)
 
-formatNodes :: [Node] -> LogRecord -> String
-formatNodes nodes LogRecord{..} = concat (map evalNode nodes)
+formatNodes :: [Node] -> LogRecord -> IO String
+formatNodes nodes LogRecord{..} = concat <$> mapM evalNode nodes
   where
-    evalNode :: Node -> String
+    evalNode :: Node -> IO String
     evalNode node = case node of
-      Level -> show logRecordLevel
-      Message -> logRecordMessage
-      Literal s -> s
+      Level -> return (show logRecordLevel)
+      Message -> return logRecordMessage
+      ThreadId -> show <$> myThreadId
+      Literal s -> return s
 
 parseFormat :: String -> [Node]
 parseFormat = filter (not . isEmpty) . go ""
   where
     isIdChar :: Char -> Bool
-    isIdChar = (`elem` "abcdefghijklmnopqrstuvwxyz")
+    isIdChar = (`elem` "abcdefghijklmnopqrstuvwxyz-")
 
     lookupNode :: String -> Maybe Node
-    lookupNode key = lookup key [("level", Level), ("message", Message)]
+    lookupNode key = lookup key [("level", Level), ("message", Message), ("thread-id", ThreadId)]
+
     go :: String -> String -> [Node]
     go acc input = case input of
       ""  -> [lit acc]
