@@ -21,6 +21,7 @@ library
       src
   exposed-modules:
       System.Logging.LogSink.Core
+      System.Logging.LogSink.Format
   build-depends:
       base == 4.*
     , logging-facade
