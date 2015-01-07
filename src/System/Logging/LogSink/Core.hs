@@ -4,6 +4,7 @@ module System.Logging.LogSink.Core (
 , defaultFormat
 , stdErrSink
 , sysLogSink
+, filterByLogLevel
 , mkLogSink
 ) where
 
@@ -44,6 +45,11 @@ sysLogSink format record = format record >>= syslog (toPriority $ logRecordLevel
 
 stdErrSink :: Format -> LogSink
 stdErrSink format record = format record >>= hPutStrLn stderr
+
+filterByLogLevel :: LogLevel -> LogSink -> LogSink
+filterByLogLevel level sink record
+  | logRecordLevel record < level = return ()
+  | otherwise = sink record
 
 mkLogSink :: Config -> LogSink
 mkLogSink (Config sinks) record = do
