@@ -37,7 +37,7 @@ parseFormat = filter (not . isEmpty) . go ""
     go :: String -> String -> [Node]
     go acc input = case input of
       ""  -> [lit acc]
-      '#':'{':xs | (key,'}':ys) <- span isIdChar xs, Just node <- lookupNode key -> lit acc : node : go "" ys
+      '{':xs | (key,'}':ys) <- span isIdChar xs, Just node <- lookupNode key -> lit acc : node : go "" ys
       x:xs -> go (x:acc) xs
 
     lit :: String -> Node
