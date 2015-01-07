@@ -11,19 +11,25 @@ main = hspec spec
 
 spec :: Spec
 spec = do
-  describe "formatLogRecord" $ do
+  describe "parseFormat" $ do
     let record = LogRecord ERROR Nothing "some message"
     it "formats a log record" $ do
-      formatLogRecord "{level}: {message}" record `shouldReturn` "ERROR: some message"
+      let Right format = parseFormat "{level}: {message}"
+      format record `shouldReturn` "ERROR: some message"
 
     it "interpolates thread-id" $ do
       threadId <- myThreadId
-      formatLogRecord "foo {thread-id} bar" record `shouldReturn` "foo " ++ show threadId ++ " bar"
+      let Right format = parseFormat "foo {thread-id} bar"
+      format record `shouldReturn` "foo " ++ show threadId ++ " bar"
 
-  describe "parseFormat" $ do
+  describe "parseNodes" $ do
     it "parses format string" $ do
-      parseFormat "{level}: {message}" `shouldBe` [Level, Literal ": ", Message]
+      parseNodes "{level}: {message}" `shouldBe` Right [Level, Literal ": ", Message]
 
     context "when given an unterminated format directive" $ do
       it "interprets it literal" $ do
-        parseFormat "{level}: {.. {message}" `shouldBe` [Level, Literal ": {.. ", Message]
+        parseNodes "{level}: {.. {message}" `shouldBe` Right [Level, Literal ": {.. ", Message]
+
+    context "when given an unknown format directive" $ do
+      it "returns Left" $ do
+        parseNodes "foo {bar} baz" `shouldBe` Left "invalid format directive \"bar\""

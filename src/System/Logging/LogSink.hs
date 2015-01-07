@@ -1,12 +1,15 @@
 module System.Logging.LogSink (
   Sink(..)
-, LogTarget(..)
 , LogLevel(..)
+, LogTarget(..)
 , setupLogging
 ) where
 
+import           Control.Applicative
 import           System.Logging.Facade.Types
 import           System.Logging.Facade.Sink
+
+import qualified System.Logging.Facade as Log
 
 import           System.Logging.LogSink.Core
 import           System.Logging.LogSink.Format
@@ -21,11 +24,22 @@ data Sink = Sink {
 } deriving (Eq, Show)
 
 setupLogging :: [Sink] -> IO ()
-setupLogging = setLogSink . combine . map toLogSink
+setupLogging sinks = mapM toLogSink sinks >>= setLogSink . combine
 
-toLogSink :: Sink -> LogSink
-toLogSink sink = maybe id filterByLogLevel (sinkLevel sink) $ case sinkTarget sink of
-  StdErr -> stdErrSink format
-  SysLog -> sysLogSink format
+toLogSink :: Sink -> IO LogSink
+toLogSink sink = maybe id filterByLogLevel (sinkLevel sink) . targetToSink sink <$> format
   where
-    format = maybe defaultFormat formatLogRecord (sinkFormat sink)
+    format :: IO Format
+    format = maybe (return defaultFormat) parseFormat_ (sinkFormat sink)
+
+    parseFormat_ :: String -> IO Format
+    parseFormat_ fmt = case parseFormat fmt of
+      Left err -> do
+        Log.warn ("Invalid format " ++ show fmt ++ " (" ++ err ++ ")")
+        return defaultFormat
+      Right f -> return f
+
+targetToSink :: Sink -> Format -> LogSink
+targetToSink sink = case sinkTarget sink of
+  StdErr -> stdErrSink
+  SysLog -> sysLogSink
