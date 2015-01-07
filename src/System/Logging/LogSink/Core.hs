@@ -1,11 +1,10 @@
 module System.Logging.LogSink.Core (
-  Config(..)
-, Format
+  Format
 , defaultFormat
 , stdErrSink
 , sysLogSink
 , filterByLogLevel
-, mkLogSink
+, combine
 ) where
 
 import           Control.Monad
@@ -13,10 +12,6 @@ import           System.IO
 import           System.Posix.Syslog
 import           System.Logging.Facade.Types
 import           System.Logging.Facade.Sink
-
-data Config = Config {
-  configSinks :: [LogSink]
-}
 
 type Format = LogRecord -> IO String
 
@@ -32,6 +27,9 @@ defaultFormat record = return $ (shows level . location . showString ": " . show
     formatLocation loc = showString (locationFile loc) . colon . shows (locationLine loc) . colon . shows (locationColumn loc)
       where colon = showString ":"
 
+stdErrSink :: Format -> LogSink
+stdErrSink format record = format record >>= hPutStrLn stderr
+
 sysLogSink :: Format -> LogSink
 sysLogSink format record = format record >>= syslog (toPriority $ logRecordLevel record)
   where
@@ -43,14 +41,11 @@ sysLogSink format record = format record >>= syslog (toPriority $ logRecordLevel
       WARN -> Warning
       ERROR -> Error
 
-stdErrSink :: Format -> LogSink
-stdErrSink format record = format record >>= hPutStrLn stderr
-
 filterByLogLevel :: LogLevel -> LogSink -> LogSink
 filterByLogLevel level sink record
   | logRecordLevel record < level = return ()
   | otherwise = sink record
 
-mkLogSink :: Config -> LogSink
-mkLogSink (Config sinks) record = do
+combine :: [LogSink] -> LogSink
+combine sinks record = do
   forM_ sinks $ \sink -> sink record
