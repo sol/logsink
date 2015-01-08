@@ -35,9 +35,13 @@ sysLogSink format record = format record >>= syslog (toPriority $ logRecordLevel
       ERROR -> Error
 
 filterByLogLevel :: LogLevel -> LogSink -> LogSink
-filterByLogLevel level sink record
-  | logRecordLevel record < level = return ()
-  | otherwise = sink record
+filterByLogLevel level sink
+  | level == minBound = sink
+  | otherwise = filteringSink
+  where
+    filteringSink record
+      | logRecordLevel record < level = return ()
+      | otherwise = sink record
 
 combine :: [LogSink] -> LogSink
 combine sinks record = do

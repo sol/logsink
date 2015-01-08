@@ -18,8 +18,8 @@ data LogTarget = StdErr | SysLog
   deriving (Eq, Show)
 
 data Sink = Sink {
-  sinkLevel :: Maybe LogLevel
-, sinkFormat :: Maybe String
+  sinkLevel :: LogLevel
+, sinkFormat :: String
 , sinkTarget :: LogTarget
 } deriving (Eq, Show)
 
@@ -27,11 +27,8 @@ setupLogging :: [Sink] -> IO ()
 setupLogging sinks = mapM toLogSink sinks >>= setLogSink . combine
 
 toLogSink :: Sink -> IO LogSink
-toLogSink sink = maybe id filterByLogLevel (sinkLevel sink) . targetToSink sink <$> format
+toLogSink sink = filterByLogLevel (sinkLevel sink) . targetToSink sink <$> parseFormat_ (sinkFormat sink)
   where
-    format :: IO Format
-    format = maybe (return defaultFormat) parseFormat_ (sinkFormat sink)
-
     parseFormat_ :: String -> IO Format
     parseFormat_ fmt = case parseFormat fmt of
       Left err -> die ("Invalid format " ++ show fmt ++ " (" ++ err ++ ")")
