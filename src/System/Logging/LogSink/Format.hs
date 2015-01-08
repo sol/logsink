@@ -10,6 +10,9 @@ import           System.Logging.Facade.Types
 
 type Format = LogRecord -> IO String
 
+defaultFormatString :: String
+defaultFormatString = "{level}: {message}"
+
 parseFormat :: String -> Either String Format
 parseFormat format = formatNodes <$> parseNodes format
 

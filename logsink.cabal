@@ -20,7 +20,7 @@ library
   hs-source-dirs:
       src
   exposed-modules:
-      System.Logging.LogSink
+      System.Logging.LogSink.Config
       System.Logging.LogSink.Core
       System.Logging.LogSink.Format
   build-depends:

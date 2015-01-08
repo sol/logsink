@@ -3,8 +3,8 @@ module System.Logging.LogSink.Core (
 , defaultFormat
 , stdErrSink
 , sysLogSink
-, filterByLogLevel
 , combine
+, filterByLogLevel
 ) where
 
 import           Control.Monad
@@ -17,7 +17,7 @@ import           System.Logging.LogSink.Format
 
 defaultFormat :: Format
 defaultFormat =
-  let Right format = parseFormat "{level}: {message}"
+  let Right format = parseFormat defaultFormatString
   in format
 
 stdErrSink :: Format -> LogSink
@@ -34,6 +34,10 @@ sysLogSink format record = format record >>= syslog (toPriority $ logRecordLevel
       WARN -> Warning
       ERROR -> Error
 
+combine :: [LogSink] -> LogSink
+combine sinks record = do
+  forM_ sinks $ \sink -> sink record
+
 filterByLogLevel :: LogLevel -> LogSink -> LogSink
 filterByLogLevel level sink
   | level == minBound = sink
@@ -42,7 +46,3 @@ filterByLogLevel level sink
     filteringSink record
       | logRecordLevel record < level = return ()
       | otherwise = sink record
-
-combine :: [LogSink] -> LogSink
-combine sinks record = do
-  forM_ sinks $ \sink -> sink record
