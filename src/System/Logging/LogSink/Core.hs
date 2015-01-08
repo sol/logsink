@@ -7,11 +7,13 @@ module System.Logging.LogSink.Core (
 , filterByLogLevel
 ) where
 
+import           Control.Concurrent.MVar
 import           Control.Monad
 import           System.IO
-import           System.Posix.Syslog
-import           System.Logging.Facade.Types
+import           System.IO.Unsafe
 import           System.Logging.Facade.Sink
+import           System.Logging.Facade.Types
+import           System.Posix.Syslog
 
 import           System.Logging.LogSink.Format
 
@@ -20,8 +22,14 @@ defaultFormat =
   let Right format = parseFormat defaultFormatString
   in format
 
+{-# NOINLINE stderrLock #-}
+stderrLock :: MVar ()
+stderrLock = unsafePerformIO $ newMVar ()
+
 stdErrSink :: Format -> LogSink
-stdErrSink format record = format record >>= hPutStrLn stderr
+stdErrSink format record = do
+  s <- format record
+  modifyMVar_ stderrLock $ \ () -> hPutStrLn stderr s
 
 sysLogSink :: Format -> LogSink
 sysLogSink format record = format record >>= syslog (toPriority $ logRecordLevel record)
