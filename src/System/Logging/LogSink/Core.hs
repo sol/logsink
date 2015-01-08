@@ -13,19 +13,12 @@ import           System.Posix.Syslog
 import           System.Logging.Facade.Types
 import           System.Logging.Facade.Sink
 
-type Format = LogRecord -> IO String
+import           System.Logging.LogSink.Format
 
 defaultFormat :: Format
-defaultFormat record = return $ (shows level . location . showString ": " . showString message) ""
-  where
-    level = logRecordLevel record
-    mLocation = logRecordLocation record
-    message = logRecordMessage record
-    location = maybe (showString "") ((showString " " .) . formatLocation) mLocation
-
-    formatLocation :: Location -> ShowS
-    formatLocation loc = showString (locationFile loc) . colon . shows (locationLine loc) . colon . shows (locationColumn loc)
-      where colon = showString ":"
+defaultFormat =
+  let Right format = parseFormat "{level}: {message}"
+  in format
 
 stdErrSink :: Format -> LogSink
 stdErrSink format record = format record >>= hPutStrLn stderr

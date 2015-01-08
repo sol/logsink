@@ -7,7 +7,8 @@ import           Data.Char
 import           Data.Time.Clock
 import           Data.Time.LocalTime ()
 import           System.Logging.Facade.Types
-import           System.Logging.LogSink.Core
+
+type Format = LogRecord -> IO String
 
 parseFormat :: String -> Either String Format
 parseFormat format = formatNodes <$> parseNodes format

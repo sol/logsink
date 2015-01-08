@@ -14,9 +14,3 @@ spec = do
     it "converts a log record to a string" $ do
       let record = LogRecord ERROR Nothing "some message"
       defaultFormat record `shouldReturn` "ERROR: some message"
-
-    context "when log record has location information" $ do
-      it "includes location information" $ do
-        let record = LogRecord ERROR (Just location) "some message"
-            location = Location "main" "Main" "Main.hs" 23 42
-        defaultFormat record `shouldReturn` "ERROR Main.hs:23:42: some message"
