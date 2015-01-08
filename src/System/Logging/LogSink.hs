@@ -6,10 +6,10 @@ module System.Logging.LogSink (
 ) where
 
 import           Control.Applicative
-import           System.Logging.Facade.Types
+import           System.Exit (exitFailure)
+import           System.IO
 import           System.Logging.Facade.Sink
-
-import qualified System.Logging.Facade as Log
+import           System.Logging.Facade.Types
 
 import           System.Logging.LogSink.Core
 import           System.Logging.LogSink.Format
@@ -34,10 +34,11 @@ toLogSink sink = maybe id filterByLogLevel (sinkLevel sink) . targetToSink sink 
 
     parseFormat_ :: String -> IO Format
     parseFormat_ fmt = case parseFormat fmt of
-      Left err -> do
-        Log.warn ("Invalid format " ++ show fmt ++ " (" ++ err ++ ")")
-        return defaultFormat
+      Left err -> die ("Invalid format " ++ show fmt ++ " (" ++ err ++ ")")
       Right f -> return f
+
+die :: String -> IO a
+die err = hPutStrLn stderr err >> exitFailure
 
 targetToSink :: Sink -> Format -> LogSink
 targetToSink sink = case sinkTarget sink of
