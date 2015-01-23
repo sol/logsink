@@ -21,15 +21,3 @@ spec = do
       threadId <- myThreadId
       let Right format = parseFormat "foo {thread-id} bar"
       format record `shouldReturn` "foo " ++ show threadId ++ " bar"
-
-  describe "parseNodes" $ do
-    it "parses format string" $ do
-      parseNodes "{level}: {message}" `shouldBe` Right [Level, Literal ": ", Message]
-
-    context "when given an unterminated format directive" $ do
-      it "interprets it literal" $ do
-        parseNodes "{level}: {.. {message}" `shouldBe` Right [Level, Literal ": {.. ", Message]
-
-    context "when given an unknown format directive" $ do
-      it "returns Left" $ do
-        parseNodes "foo {bar} baz" `shouldBe` Left "invalid format directive \"bar\""

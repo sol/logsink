@@ -16,7 +16,10 @@ import           System.Logging.Facade.Types
 import           System.Posix.Syslog
 
 import           System.Logging.LogSink.Format
+import           System.Logging.LogSink.Internal
 
+-- | Default format function that formats log records like so:
+-- > {level}: {message}
 defaultFormat :: Format
 defaultFormat =
   let Right format = parseFormat defaultFormatString
