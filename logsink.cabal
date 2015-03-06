@@ -28,6 +28,8 @@ library
       System.Logging.LogSink.Config
       System.Logging.LogSink.Core
       System.Logging.LogSink.Format
+  other-modules:
+      System.Logging.LogSink.Internal
   build-depends:
       base == 4.*
     , logging-facade
