@@ -1,0 +1,29 @@
+synopsis: A logging framework for Haskell
+category: System
+description: >
+  @logsink@ is a logging framework for Haskell.  It is meant to be used in
+  conjunction with @logging-facade@ (<http://hackage.haskell.org/package/logging-facade>).
+
+  For more information and usage, consult the README: <https://github.com/zalora/logsink#readme>
+copyright: (c) Zalora South East Asia Pte. Ltd
+license: MIT
+maintainer: Simon Hengel <sol@typeful.net>
+
+github: zalora/logsink
+
+ghc-options: -Wall
+
+dependencies:
+  - base == 4.*
+  - logging-facade
+  - hsyslog
+  - time
+
+library:
+  other-modules: System.Logging.LogSink.Internal
+
+tests:
+  spec:
+    main: Spec.hs
+    source-dirs: test, src
+    dependencies: hspec == 2.*
