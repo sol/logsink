@@ -1,12 +1,16 @@
+-- This file has been generated from package.yaml by hpack version 0.11.0.
+--
+-- see: https://github.com/sol/hpack
+
 name:             logsink
 version:          0.0.0
 synopsis:         A logging framework for Haskell
-description:
-    @logsink@ is a logging framework for Haskell.  It is meant to be used in
-    conjunction with @logging-facade@ (<http://hackage.haskell.org/package/logging-facade>).
-    .
-    For more information and usage, consult the README: <https://github.com/zalora/logsink#readme>
-
+description:      @logsink@ is a logging framework for Haskell.  It is meant to be used in
+                  conjunction with @logging-facade@ (<http://hackage.haskell.org/package/logging-facade>).
+                  .
+                  For more information and usage, consult the README: <https://github.com/sol/logsink#readme>
+homepage:         https://github.com/sol/logsink#readme
+bug-reports:      https://github.com/sol/logsink/issues
 license:          MIT
 license-file:     LICENSE
 copyright:        (c) Zalora South East Asia Pte. Ltd
@@ -17,34 +21,44 @@ category:         System
 
 source-repository head
   type: git
-  location: https://github.com/zalora/logsink
+  location: https://github.com/sol/logsink
 
 library
-  hs-source-dirs: src
+  hs-source-dirs:
+      src
+  ghc-options: -Wall
+  build-depends:
+      base == 4.*
+    , logging-facade
+    , hsyslog
+    , time
   exposed-modules:
       System.Logging.LogSink.Config
       System.Logging.LogSink.Core
       System.Logging.LogSink.Format
   other-modules:
       System.Logging.LogSink.Internal
-  build-depends:
-      base == 4.*
-    , logging-facade
-    , hsyslog
-    , time
-  ghc-options: -Wall
   default-language: Haskell2010
 
 test-suite spec
   type: exitcode-stdio-1.0
-  hs-source-dirs: test, src
   main-is: Spec.hs
+  hs-source-dirs:
+      src
+    , test
+  ghc-options: -Wall
   build-depends:
       base == 4.*
     , logging-facade
     , hsyslog
     , time
-
     , hspec == 2.*
-  ghc-options: -Wall
+  other-modules:
+      System.Logging.LogSink.Config
+      System.Logging.LogSink.Core
+      System.Logging.LogSink.Format
+      System.Logging.LogSink.Internal
+      System.Logging.LogSink.CoreSpec
+      System.Logging.LogSink.FormatSpec
+      System.Logging.LogSink.InternalSpec
   default-language: Haskell2010
