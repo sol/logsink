@@ -7,6 +7,9 @@ module System.Logging.LogSink.Core (
 , filterByLogLevel
 ) where
 
+import           Prelude ()
+import           System.Logging.LogSink.Compat
+
 import           Control.Concurrent.MVar
 import           Control.Monad
 import           System.IO
@@ -39,14 +42,14 @@ sysLogSink :: Format -> LogSink
 sysLogSink format record = do
   str <- format record
   withCStringLen str (syslog Nothing (toPriority $ logRecordLevel record))
-    where
-      toPriority :: LogLevel -> Priority
-      toPriority l = case l of
-        TRACE -> Debug
-        DEBUG -> Debug
-        INFO -> Info
-        WARN -> Warning
-        ERROR -> Error
+  where
+    toPriority :: LogLevel -> Priority
+    toPriority l = case l of
+      TRACE -> Debug
+      DEBUG -> Debug
+      INFO -> Info
+      WARN -> Warning
+      ERROR -> Error
 
 combine :: [LogSink] -> LogSink
 combine sinks record = do

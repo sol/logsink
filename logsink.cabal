@@ -37,7 +37,9 @@ library
       System.Logging.LogSink.Core
       System.Logging.LogSink.Format
   other-modules:
+      System.Logging.LogSink.Compat
       System.Logging.LogSink.Internal
+      Paths_logsink
   default-language: Haskell2010
 
 test-suite spec
@@ -54,6 +56,7 @@ test-suite spec
     , time
     , hspec == 2.*
   other-modules:
+      System.Logging.LogSink.Compat
       System.Logging.LogSink.Config
       System.Logging.LogSink.Core
       System.Logging.LogSink.Format

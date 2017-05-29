@@ -1,3 +1,4 @@
+name: logsink
 synopsis: A logging framework for Haskell
 category: System
 description: |
@@ -23,7 +24,10 @@ source-dirs:
   - src
 
 library:
-  other-modules: System.Logging.LogSink.Internal
+  exposed-modules:
+    - System.Logging.LogSink.Config
+    - System.Logging.LogSink.Core
+    - System.Logging.LogSink.Format
 
 tests:
   spec:

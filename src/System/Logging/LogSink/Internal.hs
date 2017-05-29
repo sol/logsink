@@ -1,7 +1,9 @@
 {-# LANGUAGE RecordWildCards #-}
 module System.Logging.LogSink.Internal where
 
-import           Control.Applicative
+import           Prelude ()
+import           System.Logging.LogSink.Compat
+
 import           Control.Concurrent
 import           Data.Char
 import           Data.Time.Clock

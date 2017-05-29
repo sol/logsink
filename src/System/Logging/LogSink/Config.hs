@@ -7,7 +7,9 @@ module System.Logging.LogSink.Config (
 , setupLogging
 ) where
 
-import           Control.Applicative
+import           Prelude ()
+import           System.Logging.LogSink.Compat
+
 import           System.Exit (exitFailure)
 import           System.IO
 import           System.Logging.Facade.Sink

@@ -1,10 +1,10 @@
 {-# LANGUAGE RecordWildCards #-}
-module System.Logging.LogSink.Format ( parseFormat ) where
+module System.Logging.LogSink.Format (parseFormat) where
 
-import           Control.Applicative
+import           Prelude ()
+import           System.Logging.LogSink.Compat
 
 import           System.Logging.LogSink.Internal
-
 
 -- | Parses a format string into a `Format` function.
 --
@@ -23,4 +23,3 @@ import           System.Logging.LogSink.Internal
 -- When given an invalid format strings, @parseFormat@ returns @Left@.
 parseFormat :: String -> Either String Format
 parseFormat format = formatNodes <$> parseNodes format
-
