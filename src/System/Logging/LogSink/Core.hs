@@ -17,6 +17,7 @@ import           System.Posix.Syslog
 
 import           System.Logging.LogSink.Format
 import           System.Logging.LogSink.Internal
+import           Foreign.C.String
 
 -- | Default format function that formats log records like so:
 -- > {level}: {message}
@@ -35,15 +36,17 @@ stdErrSink format record = do
   modifyMVar_ stderrLock $ \ () -> hPutStrLn stderr s
 
 sysLogSink :: Format -> LogSink
-sysLogSink format record = format record >>= syslog (toPriority $ logRecordLevel record)
-  where
-    toPriority :: LogLevel -> Priority
-    toPriority l = case l of
-      TRACE -> Debug
-      DEBUG -> Debug
-      INFO -> Info
-      WARN -> Warning
-      ERROR -> Error
+sysLogSink format record = do
+  str <- format record
+  withCStringLen str (syslog Nothing (toPriority $ logRecordLevel record))
+    where
+      toPriority :: LogLevel -> Priority
+      toPriority l = case l of
+        TRACE -> Debug
+        DEBUG -> Debug
+        INFO -> Info
+        WARN -> Warning
+        ERROR -> Error
 
 combine :: [LogSink] -> LogSink
 combine sinks record = do

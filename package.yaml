@@ -16,7 +16,7 @@ ghc-options: -Wall
 dependencies:
   - base == 4.*
   - logging-facade
-  - hsyslog
+  - hsyslog >= 5
   - time
 
 source-dirs:
