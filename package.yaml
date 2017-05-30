@@ -1,4 +1,5 @@
 name: logsink
+version: 0.2.0
 synopsis: A logging framework for Haskell
 category: System
 description: |

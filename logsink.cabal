@@ -3,7 +3,7 @@
 -- see: https://github.com/sol/hpack
 
 name:             logsink
-version:          0.0.0
+version:          0.2.0
 synopsis:         A logging framework for Haskell
 description:      @logsink@ is a logging framework for Haskell.  It is meant to be used in
                   conjunction with @logging-facade@ (<http://hackage.haskell.org/package/logging-facade>).
