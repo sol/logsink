@@ -9,7 +9,7 @@ logging behavior.
 `logsink` has built-in support for `stderr` and `syslog`. The following example
 shows how to direct log messages to `syslog`:
 
-~~~ {.haskell}
+```haskell
 import qualified System.Logging.Facade as Log
 import           System.Logging.LogSink.Config
 
@@ -17,13 +17,13 @@ main :: IO ()
 main = do
   setupLogging [defaultSinkConfig { sinkConfigTarget = SysLog }]
   Log.error "This is an error message."
-~~~
+```
 
 You can also configure the message format. (See documentation of `System.Logging.LogSink.Format` for allowed format directives.)
 
-~~~ {.haskell}
+```haskell
 main2 :: IO ()
 main2 = do
   setupLogging [defaultSinkConfig { sinkConfigFormat = "{level} - {timestamp}: {message}" }]
   Log.error "This is an error message."
-~~~
+```
